@@ -23,7 +23,36 @@ export default function App() {
 	Note: You will have to replace or modify the cardOpen state, the onClick event handler on line 35, and the way the "open" class is currently being applied on line 36. 
 */
 
-	const [cardOpen, setCardOpen] = React.useState(false)
+	const [cardOpen, setCardOpen] = React.useState(false) 
+	const [isMouseDown, setIsMouseDown]=React.useState(false) 
+	const [mouseStartPosX, setMouseStartPosX]=React.useState(null)
+	
+
+	// Handles mouse press events
+	const handleMouseDown = (event) => {
+		setIsMouseDown(true);
+		setMouseStartPosX(event.clientX);// Sets the mouse starting position 
+		setCardOpen(false) // prevent opening on mouse press
+	}
+
+	// Handles mouse move events
+	const handleMouseMove = (event) => {
+		if(isMouseDown){
+			const { clientX } = event;
+			// Calculates mouse travel distance and opens the card if it exceeds a threshold
+			const mouseTravelDistance = mouseStartPosX - clientX;
+			if (mouseTravelDistance >= 50 && !cardOpen) {
+				setCardOpen(true);
+			}
+		}
+		
+	};
+	
+	// Handles mouse move events
+	const handleMouseUp= (event)=>{
+		setIsMouseDown(false);
+	}
+
 
 	return (
 		<div className="wrapper">
@@ -32,8 +61,10 @@ export default function App() {
 				<InnerMessage />
 				
 				<div
-					onClick={()=> setCardOpen(!cardOpen)}
 					className={`cover ${cardOpen && "open"}`}
+					onMouseDown={handleMouseDown}
+					onMouseUp={handleMouseUp}
+					onMouseMove={handleMouseMove}
 				>
 					<FrontMessage /> 
 					<img src="./images/forLoop.png" />
